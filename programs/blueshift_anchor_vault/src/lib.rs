@@ -72,6 +72,36 @@ pub mod blueshift_anchor_vault {
 
         Ok(())
     }
+
+        pub fn withdraw_partial(ctx: Context<VaultAction>, amount: u64) -> Result<()> {
+        
+            let vault_balance = ctx.accounts.vault.lamports();
+
+        // check vault has lamports 
+            require_neq!(vault_balance, 0, VaultError::InvalidAmount);
+        //amount shount be zero
+            require_gt!(amount, 0, VaultError::InvalidAmount);
+        // amount shouldnt be greater than balance
+            require!(amount<=vault_balance, VaultError::InvalidAmount);
+
+            let signer_key = ctx.accounts.signer.key();
+            //seeds for verifying pda as pda has no keys
+            let signer_seeds = &[b"vault", signer_key.as_ref(), &[ctx.bumps.vault]];
+            use anchor_lang::system_program::{transfer, Transfer};
+            transfer(
+                CpiContext::new_with_signer(
+                    ctx.accounts.system_program.to_account_info(),
+                    Transfer {
+                        from: ctx.accounts.vault.to_account_info(),
+                        to: ctx.accounts.signer.to_account_info(),
+                    },
+                    &[&signer_seeds[..]]
+                ),
+                amount
+    )?;
+
+            Ok(())
+    }
 }
 
 
