@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("22222222222222222222222222222222222222222222");
+declare_id!("G6nYigMD4V4LwV381nzuwqS6mX4WFD9gfVWLyBSVmHXN");
 
 #[error_code]
 pub enum VaultError {
